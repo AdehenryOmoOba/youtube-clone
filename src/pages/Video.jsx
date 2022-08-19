@@ -44,7 +44,7 @@ color: ${({theme}) => theme.text};
 `;
 const Hr = styled.hr`
 margin: 1.5rem 0rem;
-border: 0.005rem solid ${({theme}) => theme.soft};
+border: 0.05rem solid ${({theme}) => theme.soft};
 `;
 const Button = styled.div`
 display: flex;

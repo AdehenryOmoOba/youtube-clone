@@ -2,16 +2,14 @@ import React from 'react'
 import styled from "styled-components";
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-
 import { Button } from './Menu';
+import { Link } from 'react-router-dom';
 
 const Container = styled.div`
   position: sticky;
   top: 0rem;
   height: 5.6rem;
   background-color: ${({theme}) => theme.bgLighter};
-  
-
 `;
 const Wrapper = styled.div`
  display: flex;
@@ -49,10 +47,12 @@ function Navbar() {
        <Input placeholder='Search'/>
        <SearchOutlinedIcon />
       </Search>
+      <Link to='login' style={{textDecoration:'none'}}>
       <Button style={{marginTop: '0rem'}}>
         <AccountCircleOutlinedIcon />
         SIGN IN
       </Button>
+      </Link>
     </Wrapper>
   </Container>
   )
