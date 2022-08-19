@@ -1,21 +1,43 @@
 import React from 'react'
+import styled from "styled-components";
+import Card from '../components/Card';
+
+
+
+const Container = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1.5rem 1rem;
+`;
 
 function Home() {
   return (
-    <div>
-           <p>Video cards wrapper</p>
-            <p>Video cards wrapper</p>
-            <p>Video cards wrapper</p>
-            <p>Video cards wrapper</p>
-            <p>Video cards wrapper</p>
-            <p>Video cards wrapper</p>
-            <p>Video cards wrapper</p>
-            <p>Video cards wrapper</p>
-            <p>Video cards wrapper</p>
-            <p>Video cards wrapper</p>
-            <p>Video cards wrapper</p>
-            <p>Video cards wrapper</p>
-    </div>
+    <Container>
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+        <Card />
+    </Container>
   )
 }
 

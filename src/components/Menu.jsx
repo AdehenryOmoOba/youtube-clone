@@ -17,6 +17,7 @@ import SportsEsportsOutlinedIcon from '@mui/icons-material/SportsEsportsOutlined
 import MovieCreationOutlinedIcon from '@mui/icons-material/MovieCreationOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import logo from '../logo.png'
+import { Link } from 'react-router-dom';
 
 const Container = styled.div`
   flex: 1;
@@ -50,6 +51,9 @@ const Item = styled.div`
  gap: 2rem;
  cursor: pointer;
  padding: 0.75rem 0rem;
+ &:hover{
+  background-color:  ${({theme}) => theme.soft};
+ }
 `;
 const Login = styled.div`
 
@@ -75,14 +79,16 @@ color: #aaaaaa;
 margin-bottom: 2rem;
 `;
 
-function Menu({setDarkMode}) {
+function Menu({setDarkMode,darkMode}) {
   return (
     <Container>
      <Wrapper>
+      <Link to='/' style={{textDecoration:'none', color:'inherit'}}>
       <Logo>
       <Img src={logo}/>
       AdehenryTube
       </Logo>
+      </Link>
       <Item>
         <HomeIcon />
         Home
@@ -148,9 +154,9 @@ function Menu({setDarkMode}) {
         <HelpOutlineOutlinedIcon />
         Help
       </Item>
-      <Item onClick={() => setDarkMode((prev) => !prev)}>
+      <Item onClick={() => setDarkMode((prev) => prev === 'light' ? 'dark' : "light")}>
         <SettingsBrightnessIcon />
-        Light Mode
+        {darkMode === "light" ? 'Dark Mode':'Light Mode'}
       </Item>
      </Wrapper>
     </Container>
