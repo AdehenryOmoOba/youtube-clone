@@ -89,18 +89,24 @@ function Menu({setDarkMode,darkMode}) {
       AdehenryTube
       </Logo>
       </Link>
+      <Link to='/' style={{textDecoration:'none', color:'inherit'}}>
       <Item>
         <HomeIcon />
         Home
       </Item>
+      </Link>
+      <Link to='trend' style={{textDecoration:'none', color:'inherit'}}>
       <Item>
         <ExploreOutlinedIcon />
         Explore
       </Item>
+      </Link>
+      <Link to='subscribed' style={{textDecoration:'none', color:'inherit'}}>
       <Item>
         <SubscriptionsOutlinedIcon />
         Subscriptions
       </Item>
+      </Link>
       <Hr />
       <Item>
         <VideoLibraryOutlinedIcon />

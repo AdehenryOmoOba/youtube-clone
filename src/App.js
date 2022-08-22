@@ -19,7 +19,7 @@ const Main = styled.div`
 const Wrapper = styled.div`
   padding: 2.2rem 9.6rem;
   background-color: ${({ theme }) => theme.bg};
-  height: 100%;
+  min-height: 100vh;
 `;
 
 const getTheme = () => {
@@ -41,7 +41,9 @@ function App() {
           <Navbar />
           <Wrapper>
             <Routes path="/">
-              <Route index element={<Home />} />
+              <Route index element={<Home type="random" />} />
+              <Route path="trend" element={<Home type="trend" />} />
+              <Route path="subscribed" element={<Home type="subscribed" />} />
               <Route path="video">
                 <Route path=":id" element={<Video />} />
               </Route>

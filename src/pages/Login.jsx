@@ -1,6 +1,7 @@
-import React from 'react'
+import {useState} from 'react'
 import styled from "styled-components";
-
+import {useMutation} from 'react-query'
+import axios from 'axios'
 
 const Container = styled.div`
 display: flex;
@@ -58,15 +59,24 @@ const Link = styled.span`
 margin-left: 3rem;
 `;
 
+const login = async ({username,password}) => {
+ const response =  await axios.post('auth/signin', {name:username,password})
+ return response.data
+}
+
 function Login() {
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const {mutate} = useMutation(login, {onSuccess: (response) => console.log(response),onError:(error) => console.log(error.response.data.errorMsg)})
+
   return (
     <Container>
         <Wrapper>
         <Title>Login</Title>
         <SubTitle>to continue to AdehenryTube</SubTitle>
-        <Input placeholder='Username'/>
-        <Input type='password' placeholder='Password'/>
-        <Button>Login</Button>
+        <Input placeholder='Username' value={username} onChange={(e) => setUsername(e.target.value)}/>
+        <Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)}/>
+        <Button onClick={() => mutate({username,password})}>Login</Button>
         <Title>or</Title>
         <Input placeholder='Username'/>
         <Input type='email' placeholder='Email'/>
