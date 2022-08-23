@@ -18,6 +18,8 @@ import MovieCreationOutlinedIcon from '@mui/icons-material/MovieCreationOutlined
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import logo from '../logo.png'
 import { Link } from 'react-router-dom';
+import {useSelector} from 'react-redux'
+
 
 const Container = styled.div`
   flex: 1;
@@ -80,6 +82,8 @@ margin-bottom: 2rem;
 `;
 
 function Menu({setDarkMode,darkMode}) {
+  const {user} = useSelector((state) => state.userReducer )
+
   return (
     <Container>
      <Wrapper>
@@ -117,13 +121,13 @@ function Menu({setDarkMode,darkMode}) {
         History
       </Item>
       <Hr />
-      <Login>
+  {!user &&  <Login>
       Sign in to like videos, comment, and subscribe.
       <Link to='login' style={{textDecoration:'none'}}>
       <Button><AccountCircleOutlinedIcon /> SIGN IN</Button>
       </Link>
-      </Login>
       <Hr />
+      </Login>}
       <Title>BEST OF ADEHENRYTUBE</Title>
       <Item>
         <LibraryMusicOutlinedIcon />

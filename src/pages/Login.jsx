@@ -2,6 +2,8 @@ import {useState} from 'react'
 import styled from "styled-components";
 import {useMutation} from 'react-query'
 import axios from 'axios'
+import {useDispatch,useSelector} from 'react-redux'
+import { fetchUser, fetchUserFailure, fetchUserSuccess, } from '../redux-tool-kit/slices/userSlice';
 
 const Container = styled.div`
 display: flex;
@@ -20,6 +22,7 @@ background-color: ${({theme}) => theme.bgLighter};
 border: 0.1rem solid ${({theme}) => theme.soft};
 padding: 2rem 5rem;
 gap: 1rem;
+margin-top: 2rem;
 `;
 
 const Title = styled.h1`
@@ -67,16 +70,35 @@ const login = async ({username,password}) => {
 function Login() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const {mutate} = useMutation(login, {onSuccess: (response) => console.log(response),onError:(error) => console.log(error.response.data.errorMsg)})
+  const dispatch = useDispatch()
+  const {user,loading,error} = useSelector((state) => state.userReducer )
+  const {mutate} = useMutation(login, { 
+    onSuccess: (response) => dispatch(fetchUserSuccess(response)),
+    onError:(error) => dispatch(fetchUserFailure(error.response.data.errorMsg))
+  })
+
+  const handleLogin = () => {
+    dispatch(fetchUser())
+    mutate({username,password})
+  }
+
+  console.log(user)
+
+ 
+
 
   return (
     <Container>
+      {loading && <SubTitle>Logging in...</SubTitle>}
+      {error && <SubTitle>{error}</SubTitle>}
+      {user ? <SubTitle>Welcome, {user.name}!</SubTitle> :
+      <>
         <Wrapper>
         <Title>Login</Title>
         <SubTitle>to continue to AdehenryTube</SubTitle>
         <Input placeholder='Username' value={username} onChange={(e) => setUsername(e.target.value)}/>
         <Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)}/>
-        <Button onClick={() => mutate({username,password})}>Login</Button>
+        <Button onClick={handleLogin}>Login</Button>
         <Title>or</Title>
         <Input placeholder='Username'/>
         <Input type='email' placeholder='Email'/>
@@ -92,6 +114,7 @@ function Login() {
            <Link>Terms</Link>
           </Links>
         </More>
+      </>}
     </Container>
   )
 }
