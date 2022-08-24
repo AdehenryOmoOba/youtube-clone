@@ -4,6 +4,9 @@ import {useMutation} from 'react-query'
 import axios from 'axios'
 import {useDispatch,useSelector} from 'react-redux'
 import { fetchUser, fetchUserFailure, fetchUserSuccess, } from '../redux-tool-kit/slices/userSlice';
+import { auth,googleAuthProvider } from '../firebase';
+import {signInWithPopup} from 'firebase/auth'
+
 
 const Container = styled.div`
 display: flex;
@@ -62,8 +65,12 @@ const Link = styled.span`
 margin-left: 3rem;
 `;
 
-const login = async ({username,password}) => {
- const response =  await axios.post('auth/signin', {name:username,password})
+const login = async (userData) => {
+ const response =  await axios.post('auth/signin', {...userData})
+ return response.data
+}
+const googleLogin = async (userData) => {
+ const response =  await axios.post('auth/google-signin', {...userData})
  return response.data
 }
 
@@ -73,7 +80,15 @@ function Login() {
   const dispatch = useDispatch()
   const {user,loading,error} = useSelector((state) => state.userReducer )
   const {mutate} = useMutation(login, { 
-    onSuccess: (response) => dispatch(fetchUserSuccess(response)),
+    onSuccess: (response) => {
+      localStorage.setItem('logged-in-user', JSON.stringify(response))
+      dispatch(fetchUserSuccess(response))},
+    onError:(error) => dispatch(fetchUserFailure(error.response.data.errorMsg))
+  })
+  const {mutate:googleMutate} = useMutation(googleLogin, { 
+    onSuccess: (response) => {
+      localStorage.setItem('logged-in-user', JSON.stringify(response))
+      dispatch(fetchUserSuccess(response))},
     onError:(error) => dispatch(fetchUserFailure(error.response.data.errorMsg))
   })
 
@@ -82,9 +97,17 @@ function Login() {
     mutate({username,password})
   }
 
-  console.log(user)
+  const handleGoogleLogin =  () => {
+    dispatch(fetchUser())
+     signInWithPopup(auth, googleAuthProvider).then((result) => {
+       console.log(result.user)
+       googleMutate({name: result.user.displayName, email: result.user.email, img:result.user.photoURL})
+     }).catch((error) => {
+       dispatch(fetchUserFailure(error.message))
+     })
+  } 
 
- 
+  console.log(user)
 
 
   return (
@@ -100,6 +123,8 @@ function Login() {
         <Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)}/>
         <Button onClick={handleLogin}>Login</Button>
         <Title>or</Title>
+        <Button onClick={handleGoogleLogin}>Login with Google</Button>
+        <Title>Register</Title>
         <Input placeholder='Username'/>
         <Input type='email' placeholder='Email'/>
         <Input type='password' placeholder='Password'/>

@@ -8,6 +8,8 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Video from "./pages/Video";
 import Login from "./pages/Login";
+import { fetchUserSuccess } from "./redux-tool-kit/slices/userSlice";
+import { useDispatch } from "react-redux";
 
 const Container = styled.div`
   display: flex;
@@ -28,6 +30,13 @@ const getTheme = () => {
 
 function App() {
   const [darkMode, setDarkMode] = useState(getTheme());
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    let user = localStorage.getItem("logged-in-user");
+    if (user) user = JSON.parse(user);
+    dispatch(fetchUserSuccess(user));
+  }, [dispatch]);
 
   useEffect(() => {
     localStorage.setItem("themeMode", darkMode);

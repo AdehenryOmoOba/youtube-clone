@@ -68,7 +68,7 @@ function Navbar() {
       </Search>
    {user ? <User>
     <VideoCallOutlinedIcon />
-    <Avatar />
+    <Avatar src={user.img}/>
     {user.name}
    </User> : 
       (<Link to='login' style={{textDecoration:'none'}}>
