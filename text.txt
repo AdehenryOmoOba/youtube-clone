@@ -1,3 +1,1 @@
-WARNING in ./node_modules/timeago.js/esm/utils/dom.js
-Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
-Failed to parse source map from 'C:\*directory*\node_modules\timeago.js\src\utils\dom.ts'
+WARNING 
