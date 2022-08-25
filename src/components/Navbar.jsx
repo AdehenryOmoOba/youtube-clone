@@ -5,7 +5,9 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import VideoCallOutlinedIcon from '@mui/icons-material/VideoCallOutlined';
 import { Button } from './Menu';
 import { Link } from 'react-router-dom';
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
+import { logout} from '../redux-tool-kit/slices/userSlice';
+
 
 const Container = styled.div`
   position: sticky;
@@ -56,8 +58,15 @@ border-radius: 50%;
 background-color: #999999;
 `;
 
-function Navbar() {
+function Navbar({setIsLoggedIn}) {
   const {user} = useSelector((state) => state.userReducer )
+  const dispatch = useDispatch()
+
+  const handleLogout = () => {
+    localStorage.removeItem('logged-in-user')
+    dispatch(logout())
+    setIsLoggedIn('false')
+  } 
 
   return (
   <Container>
@@ -70,6 +79,7 @@ function Navbar() {
     <VideoCallOutlinedIcon />
     <Avatar src={user.img}/>
     {user.name}
+    <Button onClick={handleLogout}>Logout</Button>
    </User> : 
       (<Link to='login' style={{textDecoration:'none'}}>
       <Button style={{marginTop: '0rem'}}>

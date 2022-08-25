@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import styled from "styled-components"
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
@@ -7,6 +7,15 @@ import AddTaskOutlinedIcon from '@mui/icons-material/AddTaskOutlined';
 import channelImage from '../channelImage.png'
 import Comments from '../components/Comments';
 import Card from '../components/Card';
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from 'react-router-dom';
+import { useQuery } from 'react-query';
+import axios from 'axios';
+import { fetchVideoFailure, fetchVideoSuccess } from '../redux-tool-kit/slices/videoSlice';
+import { format } from 'timeago.js';
+
+
+
 
 const Container = styled.div`
 display: flex;
@@ -60,11 +69,11 @@ const ChannelInfo = styled.div`
 display: flex;
 gap: 2rem;
 `;
-
 const Image = styled.img`
 width: 5rem;
 height: 5rem;
 border-radius: 50%;
+border: 1rem solid yellow;
 `;
 const ChannelDetails = styled.div`
 display: flex;
@@ -85,7 +94,6 @@ font-size: 1.2rem;
 const Description = styled.div`
 font-size: 1.4rem;
 `;
-
 const SubscribeBtn = styled.button`
 background-color: #cc1a00;
 font-weight: 500;
@@ -97,7 +105,43 @@ padding: 1rem 2rem;
 cursor: pointer;
 `;
 
+const fetchVideo = async ({queryKey}) => {
+  const response = await axios.get(`/videos/find/${queryKey[1]}`)
+  return response.data
+}
+
+const fetchChannel = async ({queryKey}) => {
+  const response = await axios.get(`/users/find/${queryKey[1]}`)
+  return response.data
+}
+
 function Video() {
+  const dispatch = useDispatch()
+  const [channel, setChannel] = useState({})
+  const {user} = useSelector((state) => state.userReducer)
+  const {video} = useSelector((state) => state.videoReducer)
+  const {pathname} = useLocation()
+  const videoId = pathname.split('/')[2]
+  const {data, isLoading,isError,error} = useQuery(['video', videoId], fetchVideo,{
+    onSuccess: (videoObj) => {
+     dispatch(fetchVideoSuccess(videoObj))
+    },
+    onError: (error) => {
+      console.log(error)
+      dispatch(fetchVideoFailure(error))
+    }
+  })
+
+  const {data:channelData} = useQuery(['channel', video?.userId], fetchChannel,{
+   enabled: video ? true : false,
+   onSuccess: (channelObj) => {
+    setChannel(channelObj)
+   }
+  })
+
+  console.log(video)
+  console.log(channel)
+
   return (
     <Container>
       <Content>
@@ -110,11 +154,11 @@ function Video() {
                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                allowFullScreen></iframe>
         </VideoWrapper>
-        <Title>Test video</Title>
+        <Title>{video?.title}</Title>
         <Details>
-          <Info>23,804 views &#x2022; August 16, 2022</Info>
+          <Info>{video?.views} views &#x2022; {format(video?.createdAt)}</Info>
           <Buttons>
-            <Button><ThumbUpOutlinedIcon />28.9k</Button>
+            <Button>{video?.likes?.length}<ThumbUpOutlinedIcon /></Button>
             <Button><ThumbDownOffAltOutlinedIcon />DISLIKE</Button>
             <Button><ReplyOutlinedIcon />REPLY</Button>
             <Button><AddTaskOutlinedIcon />SAVE</Button>
@@ -123,11 +167,11 @@ function Video() {
         <Hr />
         <Channel>
           <ChannelInfo>
-            <Image src={channelImage}/>
+            <Image src={channel?.img}/>
             <ChannelDetails>
-              <ChannelName>Codenovella</ChannelName>
-              <ChannelCounter>357k Subscibers</ChannelCounter>
-              <Description>This video focuses on how to use Astro - A new product designed to enhance your productivity wether you're working remotely or at the office. It also some with a 3 years warranty!. You also get to enjoy a wooping 50% discount if you purchase between now and August 23rd, 2022. Hurry now while stock last!</Description>
+              <ChannelName>{channel?.name}</ChannelName>
+              <ChannelCounter>{channel?.subscribers} Subscibers</ChannelCounter>
+              <Description>{video?.desc}</Description>
             </ChannelDetails>
           </ChannelInfo>
           <SubscribeBtn>SUBSCRIBE</SubscribeBtn>
@@ -136,12 +180,12 @@ function Video() {
         <Comments />
       </Content>
       <Recommendation>
+        {/* <Card type='small'/>
         <Card type='small'/>
         <Card type='small'/>
         <Card type='small'/>
         <Card type='small'/>
-        <Card type='small'/>
-        <Card type='small'/>
+        <Card type='small'/> */}
       </Recommendation>
     </Container>
   )

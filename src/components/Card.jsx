@@ -63,7 +63,6 @@ const fetchChannelUser = async ({queryKey}) => {
 function Card({type,video}) {
   const { data, isLoading, isError, error } = useQuery(['channelUser', video.userId], fetchChannelUser)
 
-
   if (isLoading) return <Messages>Loading...</Messages>
 
   if (isError) {
@@ -72,7 +71,7 @@ function Card({type,video}) {
   
   if(data){
       return (
-        <Link to='/video/test' style={{textDecoration:'none'}}>
+        <Link to={`/video/${video._id}`} style={{textDecoration:'none'}}>
       <Container type={type}>
         <Image src={video.imgURL} type={type}/>
         <Details type={type}>

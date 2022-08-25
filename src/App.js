@@ -30,13 +30,14 @@ const getTheme = () => {
 
 function App() {
   const [darkMode, setDarkMode] = useState(getTheme());
+  const [isLoggedIn, setIsLoggedIn] = useState("");
   const dispatch = useDispatch();
 
   useEffect(() => {
     let user = localStorage.getItem("logged-in-user");
     if (user) user = JSON.parse(user);
     dispatch(fetchUserSuccess(user));
-  }, [dispatch]);
+  }, [dispatch, isLoggedIn]);
 
   useEffect(() => {
     localStorage.setItem("themeMode", darkMode);
@@ -47,7 +48,7 @@ function App() {
       <Container>
         <Menu setDarkMode={setDarkMode} darkMode={darkMode} />
         <Main>
-          <Navbar />
+          <Navbar setIsLoggedIn={setIsLoggedIn} />
           <Wrapper>
             <Routes path="/">
               <Route index element={<Home type="random" />} />
@@ -56,7 +57,15 @@ function App() {
               <Route path="video">
                 <Route path=":id" element={<Video />} />
               </Route>
-              <Route path="login" element={<Login />} />
+              <Route
+                path="login"
+                element={
+                  <Login
+                    setIsLoggedIn={setIsLoggedIn}
+                    isLoggedIn={isLoggedIn}
+                  />
+                }
+              />
             </Routes>
           </Wrapper>
         </Main>
