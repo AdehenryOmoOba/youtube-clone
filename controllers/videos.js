@@ -12,7 +12,6 @@ export const getAllVideosController = async (req, res, next) => {
 };
 
 export const getVideoController = async (req, res, next) => {
-  console.log(req.params.id);
   try {
     const videoInfo = await VideoModel.findById(req.params.id);
     res.status(200).json(videoInfo);

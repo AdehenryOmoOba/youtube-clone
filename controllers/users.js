@@ -95,16 +95,24 @@ export const likeVideoController = async (req, res, next) => {
     const isLiked = video.likes.some((id) => id === userId);
 
     if (isLiked) {
-      await VideoModel.findByIdAndUpdate(videoId, {
-        $pull: { likes: userId },
-      });
-      res.status(200).json({ success: "Video unliked successfully!" });
+      const result = await VideoModel.findByIdAndUpdate(
+        videoId,
+        {
+          $pull: { likes: userId },
+        },
+        { new: true }
+      );
+      res.status(200).json({ dislikes: result.dislikes, likes: result.likes });
     } else {
-      await VideoModel.findByIdAndUpdate(videoId, {
-        $addToSet: { likes: userId },
-        $pull: { dislikes: userId },
-      });
-      res.status(200).json({ success: "Video liked successfully!" });
+      const result = await VideoModel.findByIdAndUpdate(
+        videoId,
+        {
+          $addToSet: { likes: userId },
+          $pull: { dislikes: userId },
+        },
+        { new: true }
+      );
+      res.status(200).json({ dislikes: result.dislikes, likes: result.likes });
     }
   } catch (error) {
     next(error);
@@ -119,16 +127,24 @@ export const dislikeVideoController = async (req, res, next) => {
     const isDisliked = video.dislikes.some((id) => id === userId);
 
     if (isDisliked) {
-      await VideoModel.findByIdAndUpdate(videoId, {
-        $pull: { dislikes: userId },
-      });
-      res.status(200).json({ success: "Video undisliked successfully!" });
+      const result = await VideoModel.findByIdAndUpdate(
+        videoId,
+        {
+          $pull: { dislikes: userId },
+        },
+        { new: true }
+      );
+      res.status(200).json({ dislikes: result.dislikes, likes: result.likes });
     } else {
-      await VideoModel.findByIdAndUpdate(videoId, {
-        $addToSet: { dislikes: userId },
-        $pull: { likes: userId },
-      });
-      res.status(200).json({ success: "Video disliked successfully!" });
+      const result = await VideoModel.findByIdAndUpdate(
+        videoId,
+        {
+          $addToSet: { dislikes: userId },
+          $pull: { likes: userId },
+        },
+        { new: true }
+      );
+      res.status(200).json({ dislikes: result.dislikes, likes: result.likes });
     }
   } catch (error) {
     next(error);

@@ -31,6 +31,7 @@ export const signUpController = async (req, res, next) => {
 export const signInController = async (req, res, next) => {
   const { username } = req.body;
   let matchPassword;
+  console.log("sign in...");
 
   try {
     const user = await YoutubeUsersModel.findOne({ name: username });
