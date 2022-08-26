@@ -25,9 +25,22 @@ const videoSlice = createSlice({
       state.video = null;
       state.error = action.payload;
     },
+    likeVideoSuccess: (state, action) => {
+      state.video.likes = action.payload.likes;
+      state.video.dislikes = action.payload.dislikes;
+    },
+    dislikeVideoSuccess: (state, action) => {
+      state.video.dislikes = action.payload.dislikes;
+      state.video.likes = action.payload.likes;
+    },
   },
 });
 
 export default videoSlice.reducer;
-export const { fetchVideo, fetchVideoSuccess, fetchVideoFailure } =
-  videoSlice.actions;
+export const {
+  fetchVideo,
+  fetchVideoSuccess,
+  fetchVideoFailure,
+  likeVideoSuccess,
+  dislikeVideoSuccess,
+} = videoSlice.actions;

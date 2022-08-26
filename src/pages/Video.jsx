@@ -4,17 +4,16 @@ import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
 import ReplyOutlinedIcon from '@mui/icons-material/ReplyOutlined';
 import AddTaskOutlinedIcon from '@mui/icons-material/AddTaskOutlined';
-import channelImage from '../channelImage.png'
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Comments from '../components/Comments';
-import Card from '../components/Card';
+// import Card from '../components/Card';
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from 'react-router-dom';
-import { useQuery } from 'react-query';
+import { useQuery ,useMutation} from 'react-query';
 import axios from 'axios';
-import { fetchVideoFailure, fetchVideoSuccess } from '../redux-tool-kit/slices/videoSlice';
+import { fetchVideoFailure, fetchVideoSuccess, likeVideoSuccess,dislikeVideoSuccess } from '../redux-tool-kit/slices/videoSlice';
 import { format } from 'timeago.js';
-
-
 
 
 const Container = styled.div`
@@ -115,6 +114,18 @@ const fetchChannel = async ({queryKey}) => {
   return response.data
 }
 
+const likeVideo = async (data) => {
+  const {userInfo} = data[0]
+  const response = await axios.put(`/users/like/${data[1]}`, userInfo)
+  return response.data
+}
+const dislikeVideo = async (data) => {
+  const {userInfo} = data[0]
+  const response = await axios.put(`/users/dislike/${data[1]}`, userInfo)
+  return response.data
+}
+
+
 function Video() {
   const dispatch = useDispatch()
   const [channel, setChannel] = useState({})
@@ -122,8 +133,15 @@ function Video() {
   const {video} = useSelector((state) => state.videoReducer)
   const {pathname} = useLocation()
   const videoId = pathname.split('/')[2]
-  const {data, isLoading,isError,error} = useQuery(['video', videoId], fetchVideo,{
-    onSuccess: (videoObj) => {
+  const {mutate} = useMutation(likeVideo,{
+    onSuccess: (response) => dispatch(likeVideoSuccess(response))
+  })
+  const {mutate:dislikeMutate} = useMutation(dislikeVideo,{
+    onSuccess: (response) => dispatch(dislikeVideoSuccess(response))
+  })
+
+     useQuery(['video', videoId], fetchVideo,{
+     onSuccess: (videoObj) => {
      dispatch(fetchVideoSuccess(videoObj))
     },
     onError: (error) => {
@@ -132,15 +150,24 @@ function Video() {
     }
   })
 
-  const {data:channelData} = useQuery(['channel', video?.userId], fetchChannel,{
+   useQuery(['channel', video?.userId], fetchChannel,{
    enabled: video ? true : false,
    onSuccess: (channelObj) => {
-    setChannel(channelObj)
+   setChannel(channelObj)
    }
   })
 
-  console.log(video)
-  console.log(channel)
+  const handleLike = () => {
+    if(!user) return
+   mutate([{userInfo:{id: user?._id}},videoId])
+
+  }
+
+  const handleDislike = () => {
+    if(!user) return
+    dislikeMutate([{userInfo:{id: user?._id}},videoId])
+  }
+
 
   return (
     <Container>
@@ -158,8 +185,8 @@ function Video() {
         <Details>
           <Info>{video?.views} views &#x2022; {format(video?.createdAt)}</Info>
           <Buttons>
-            <Button>{video?.likes?.length}<ThumbUpOutlinedIcon /></Button>
-            <Button><ThumbDownOffAltOutlinedIcon />DISLIKE</Button>
+            <Button onClick={handleLike}>{video?.likes?.length}{video?.likes.includes(user?._id) ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}</Button>
+            <Button onClick={handleDislike}>{video?.dislikes.includes(user?._id) ? <ThumbDownIcon /> : <ThumbDownOffAltOutlinedIcon />} DISLIKE</Button>
             <Button><ReplyOutlinedIcon />REPLY</Button>
             <Button><AddTaskOutlinedIcon />SAVE</Button>
           </Buttons>
