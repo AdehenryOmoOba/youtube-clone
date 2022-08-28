@@ -60,45 +60,44 @@ export const getUserController = async (req, res, next) => {
 };
 
 export const subscribeController = async (req, res, next) => {
-  console.log("sub route");
   try {
     const result = await YoutubeUsersModel.findByIdAndUpdate(
-      req.body.channel.id,
+      req.params.id,
       {
-        $addToSet: { subscribedUsers: req.params.id },
+        $addToSet: { subscribedUsers: req.body.channel.id },
       },
       { new: true }
     );
-    await YoutubeUsersModel.findByIdAndUpdate(req.params.id, {
+    await YoutubeUsersModel.findByIdAndUpdate(req.body.channel.id, {
       $inc: { subscribers: 1 },
     });
-    res
-      .status(200)
-      .json({ subscribedUsers: result.subscribedUsers, count: +1 });
+    res.status(200).json({
+      newUser: result,
+      subscribedUsers: result.subscribedUsers,
+      count: +1,
+    });
   } catch (error) {
     next(error);
   }
 };
 
 export const unsubscribeController = async (req, res, next) => {
-  console.log("unsub route");
-  console.log("req.body.channel.id - ", req.body.channel.id);
-  console.log("req.params.id - ", req.params.id);
-
   try {
     const result = await YoutubeUsersModel.findByIdAndUpdate(
-      req.body.channel.id,
+      req.params.id,
       {
-        $pull: { subscribedUsers: req.params.id },
+        $pull: { subscribedUsers: req.body.channel.id },
       },
       { new: true }
     );
-    await YoutubeUsersModel.findByIdAndUpdate(req.params.id, {
+    await YoutubeUsersModel.findByIdAndUpdate(req.body.channel.id, {
       $inc: { subscribers: -1 },
     });
-    res
-      .status(200)
-      .json({ subscribedUsers: result.subscribedUsers, count: -1 });
+    res.status(200).json({
+      newUser: result,
+      subscribedUsers: result.subscribedUsers,
+      count: -1,
+    });
   } catch (error) {
     next(error);
   }
