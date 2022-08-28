@@ -105,6 +105,12 @@ height: max-content;
 padding: 1rem 2rem;
 cursor: pointer;
 `;
+const VideoFrame = styled.video`
+  max-height: 72rem;
+  width: 100%;
+  object-fit: cover;
+`
+
 
 const fetchVideo = async ({queryKey}) => {
   const response = await axios.get(`/videos/find/${queryKey[1]}`)
@@ -194,18 +200,11 @@ function Video() {
   }
 
 
-
   return (
     <Container>
       <Content>
         <VideoWrapper>
-        <iframe width="100%" 
-               height="620" 
-               src="https://www.youtube.com/embed/gxBkghlglTg" 
-               title="YouTube video player" 
-               frameBorder="0" 
-               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-               allowFullScreen></iframe>
+         <VideoFrame src={video?.videoURL}/>
         </VideoWrapper>
         <Title>{video?.title}</Title>
         <Details>
@@ -230,7 +229,7 @@ function Video() {
           <SubscribeBtn onClick={handleSubscription}>{user?.subscribedUsers?.includes(channel?._id) ? "SUBSCRIBED" : "SUBSCRIBE"}</SubscribeBtn>
         </Channel>
         <Hr />
-        <Comments />
+        <Comments videoId={video?._id}/>
       </Content>
       <Recommendation>
         {/* <Card type='small'/>

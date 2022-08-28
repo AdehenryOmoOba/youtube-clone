@@ -38,13 +38,13 @@ font-size: 1.4rem;
 `;
 
 
-function Comment() {
+function Comment({comment}) {
   return (
     <Container>
         <Avatar src={channelImage}/>
         <Details>
           <Name>Henry Ade <Date>1 day ago</Date></Name>
-          <Text>I appreciate your effort towards the growth of the community. You are doing a great job on the JS courses and i would like you to also do something on REACT and Tailwind CSS also. Remain blessed!</Text>
+          <Text>{comment.desc}</Text>
         </Details>
 
     </Container>

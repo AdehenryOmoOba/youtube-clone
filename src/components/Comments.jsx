@@ -1,7 +1,9 @@
-import React from 'react'
+import React,{useState} from 'react'
+import { useQuery } from 'react-query';
 import styled from "styled-components";
-import channelImage from '../channelImage.png'
 import Comment from './Comment';
+import axios from 'axios'
+import { useSelector } from 'react-redux';
 
 const Container = styled.div`
 `;
@@ -25,14 +27,27 @@ width: 100%;
 color: ${({theme}) => theme.text};
 `;
 
-function Comments() {
+const fetchComments = async ({queryKey}) => {
+  const response = await axios.get(`/comments/${queryKey[1]}`)
+  return response.data
+}
+
+function Comments({videoId}) {
+  const {user} = useSelector((state) => state.userReducer)
+  const [comments, setComments] = useState([])
+  useQuery(['comments', videoId], fetchComments,{
+    onSuccess: (videoComments) => {
+    setComments(videoComments)
+    }
+   })
+
   return (
     <Container>
         <NewComment>
-            <Avatar src={channelImage}/>
+            <Avatar src={user?.img}/>
             <Input placeholder='Add a comment...'/>
         </NewComment>
-        <Comment />
+        {comments.map((comment) =>  <Comment key={comment._id} comment={comment}/>)}
     </Container>
   )
 }
