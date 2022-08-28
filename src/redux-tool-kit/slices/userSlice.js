@@ -28,9 +28,17 @@ const userSlice = createSlice({
     logout: (state) => {
       state = initialState;
     },
+    subscription: (state, action) => {
+      state.user.subscribedUsers = action.payload;
+    },
   },
 });
 
 export default userSlice.reducer;
-export const { fetchUser, fetchUserSuccess, fetchUserFailure, logout } =
-  userSlice.actions;
+export const {
+  fetchUser,
+  fetchUserSuccess,
+  fetchUserFailure,
+  logout,
+  subscription,
+} = userSlice.actions;

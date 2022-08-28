@@ -13,7 +13,9 @@ import { useLocation } from 'react-router-dom';
 import { useQuery ,useMutation} from 'react-query';
 import axios from 'axios';
 import { fetchVideoFailure, fetchVideoSuccess, likeVideoSuccess,dislikeVideoSuccess } from '../redux-tool-kit/slices/videoSlice';
+import { subscription as userSubscription } from '../redux-tool-kit/slices/userSlice';
 import { format } from 'timeago.js';
+
 
 
 const Container = styled.div`
@@ -124,6 +126,17 @@ const dislikeVideo = async (data) => {
   const response = await axios.put(`/users/dislike/${data[1]}`, userInfo)
   return response.data
 }
+const subscription = async (data) => {
+  const {channel} = data[0]
+  if(data[2] === 'SUBSCRIBE') {
+    const response = await axios.put(`/users/sub/${data[1]}`, {channel})
+    return response.data
+  }
+  if(data[2] === 'SUBSCRIBED') {
+    const response = await axios.put(`/users/unsub/${data[1]}`, {channel})
+    return response.data
+  }
+}
 
 
 function Video() {
@@ -139,13 +152,19 @@ function Video() {
   const {mutate:dislikeMutate} = useMutation(dislikeVideo,{
     onSuccess: (response) => dispatch(dislikeVideoSuccess(response))
   })
+  const {mutate:subscriptionMutate} = useMutation(subscription,{
+    onSuccess: ({newUser,subscribedUsers,count}) => {
+      setChannel({...channel,subscribers: Number(channel.subscribers) + Number(count)})
+      dispatch(userSubscription(subscribedUsers))
+      localStorage.setItem("logged-in-user",JSON.stringify(newUser))
+    }
+  })
 
      useQuery(['video', videoId], fetchVideo,{
      onSuccess: (videoObj) => {
      dispatch(fetchVideoSuccess(videoObj))
     },
     onError: (error) => {
-      console.log(error)
       dispatch(fetchVideoFailure(error))
     }
   })
@@ -168,6 +187,13 @@ function Video() {
     dislikeMutate([{userInfo:{id: user?._id}},videoId])
   }
 
+  const handleSubscription = (e) => {
+    if(!user) return
+    let subStatus = e.target.textContent
+    subscriptionMutate([{channel:{id: channel?._id}},user?._id,subStatus])
+  }
+
+
 
   return (
     <Container>
@@ -185,9 +211,9 @@ function Video() {
         <Details>
           <Info>{video?.views} views &#x2022; {format(video?.createdAt)}</Info>
           <Buttons>
-            <Button onClick={handleLike}>{video?.likes?.length}{video?.likes.includes(user?._id) ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}</Button>
+            <Button onClick={handleLike}>{video?.likes.includes(user?._id) ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />} {video?.likes?.length}</Button>
             <Button onClick={handleDislike}>{video?.dislikes.includes(user?._id) ? <ThumbDownIcon /> : <ThumbDownOffAltOutlinedIcon />} DISLIKE</Button>
-            <Button><ReplyOutlinedIcon />REPLY</Button>
+            <Button><ReplyOutlinedIcon />SHARE</Button>
             <Button><AddTaskOutlinedIcon />SAVE</Button>
           </Buttons>
         </Details>
@@ -201,7 +227,7 @@ function Video() {
               <Description>{video?.desc}</Description>
             </ChannelDetails>
           </ChannelInfo>
-          <SubscribeBtn>SUBSCRIBE</SubscribeBtn>
+          <SubscribeBtn onClick={handleSubscription}>{user?.subscribedUsers?.includes(channel?._id) ? "SUBSCRIBED" : "SUBSCRIBE"}</SubscribeBtn>
         </Channel>
         <Hr />
         <Comments />
