@@ -152,12 +152,15 @@ function Video() {
   const {video} = useSelector((state) => state.videoReducer)
   const {pathname} = useLocation()
   const videoId = pathname.split('/')[2]
+
   const {mutate} = useMutation(likeVideo,{
     onSuccess: (response) => dispatch(likeVideoSuccess(response))
   })
+
   const {mutate:dislikeMutate} = useMutation(dislikeVideo,{
     onSuccess: (response) => dispatch(dislikeVideoSuccess(response))
   })
+  
   const {mutate:subscriptionMutate} = useMutation(subscription,{
     onSuccess: ({newUser,subscribedUsers,count}) => {
       setChannel({...channel,subscribers: Number(channel.subscribers) + Number(count)})

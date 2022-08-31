@@ -43,6 +43,7 @@ function App() {
     localStorage.setItem("themeMode", darkMode);
   }, [darkMode]);
 
+
   return (
     <ThemeProvider theme={darkMode === "dark" ? darkTheme : lightTheme}>
       <Container>

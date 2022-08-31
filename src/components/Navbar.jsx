@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import styled from "styled-components";
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
@@ -7,6 +7,7 @@ import { Button } from './Menu';
 import { Link } from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux'
 import { logout} from '../redux-tool-kit/slices/userSlice';
+import Upload from '../pages/Upload';
 
 
 const Container = styled.div`
@@ -59,6 +60,7 @@ background-color: #999999;
 `;
 
 function Navbar({setIsLoggedIn}) {
+  const [openUpload, setOpenUpload] = useState(false)
   const {user} = useSelector((state) => state.userReducer )
   const dispatch = useDispatch()
 
@@ -69,6 +71,7 @@ function Navbar({setIsLoggedIn}) {
   } 
 
   return (
+    <>
   <Container>
     <Wrapper>
       <Search>
@@ -76,7 +79,7 @@ function Navbar({setIsLoggedIn}) {
        <SearchOutlinedIcon />
       </Search>
    {user ? <User>
-    <VideoCallOutlinedIcon />
+    <VideoCallOutlinedIcon onClick={() => setOpenUpload(true)}/>
     <Avatar src={user.img}/>
     {user.name}
     <Button onClick={handleLogout}>Logout</Button>
@@ -89,6 +92,8 @@ function Navbar({setIsLoggedIn}) {
       </Link>)}
     </Wrapper>
   </Container>
+  {openUpload && <Upload setOpenUpload={setOpenUpload}/>}
+  </>
   )
 }
 

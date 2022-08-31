@@ -1,7 +1,8 @@
-import React from 'react'
+import axios from 'axios';
+import React, { useState } from 'react'
+import { useQuery } from 'react-query';
 import styled from "styled-components";
-import channelImage from '../channelImage.png'
-
+import { format } from 'timeago.js';
 
 const Container = styled.div`
 display: flex;
@@ -37,13 +38,25 @@ const Text = styled.span`
 font-size: 1.4rem;
 `;
 
+const fetchCommentUser = async ({queryKey}) => {
+  const response = await axios.get(`/users/find/${queryKey[1]}`)
+  return response.data
+}
 
 function Comment({comment}) {
+    const [commentUser, setCommentUser] = useState({})
+  
+     useQuery(['commentator', comment.userId], fetchCommentUser,{
+     onSuccess: (commentator) => {
+      setCommentUser(commentator)
+     }
+    })
+
   return (
     <Container>
-        <Avatar src={channelImage}/>
+        <Avatar src={commentUser.img}/>
         <Details>
-          <Name>Henry Ade <Date>1 day ago</Date></Name>
+          <Name>{commentUser.name}<Date>{format(comment.postedAt)}</Date></Name>
           <Text>{comment.desc}</Text>
         </Details>
 
