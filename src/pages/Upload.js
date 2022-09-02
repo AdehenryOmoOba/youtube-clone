@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import reactDOM from "react-dom";
+import { app } from "../firebase";
+import {useMutation} from 'react-query'
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   getStorage,
   ref,
@@ -66,27 +70,83 @@ const Label = styled.label`
   color: ${({ theme }) => theme.text};
 `;
 
+const addVideo = async (videoData) => {
+  const response =  await axios.post('/videos', videoData)
+  return response.data
+ }
+
+
 function Upload({ setOpenUpload }) {
+  const navigate = useNavigate()
   const [video, setVideo] = useState(null);
   const [videoImage, setVideoImage] = useState(null);
   const [videoPercentage, setVideoPercentage] = useState(0);
   const [videoImagePercentage, setVideoImagePercentage] = useState(0);
   const [inputs, setInputs] = useState({});
 
+  const {mutate} = useMutation(addVideo, { 
+    onSuccess: (response) => {
+    setOpenUpload(false)
+    navigate(`/video/${response._id}`)
+    },
+    onError:(error) => console.log(error.message)
+  })
+
   useEffect(() => {
-    uploadFile(video);
+    video && uploadFile(video, "videoUrl");
   }, [video]);
 
   useEffect(() => {
-    uploadFile(videoImage);
+    videoImage && uploadFile(videoImage, "imgUrl");
   }, [videoImage]);
-
-  const uploadFile = (file) => {};
 
   const handleChange = (e) => {
     e.target.name === "tags"
-      ? setInputs({ ...inputs, [e.target.name]: e.target.value.split(",") })
-      : setInputs({ ...inputs, [e.target.name]: e.target.value });
+      ? setInputs((prevInputs) => {
+          return { ...prevInputs, [e.target.name]: e.target.value.toLowerCase().split(",") };
+        })
+      : setInputs((prevInputs) => {
+          return { ...inputs, [e.target.name]: e.target.value };
+        });
+  };
+
+  const uploadFile = (file, urlType) => {
+    const firebaseStorage = getStorage(app);
+    const fileName = new Date().getTime() + file.name;
+    const firebaseStorageRef =
+      urlType === "imgUrl"
+        ? ref(firebaseStorage, `youtubeclone/images/${fileName}`)
+        : ref(firebaseStorage, `youtubeclone/videos/${fileName}`);
+    const uploadTask = uploadBytesResumable(firebaseStorageRef, file);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        urlType === "imgUrl"
+          ? setVideoImagePercentage(Math.round(progress))
+          : setVideoPercentage(Math.round(progress));
+        switch (snapshot.state) {
+          case "running":
+            console.log("Upload is running");
+            break;
+          default:
+            console.log(snapshot.state);
+        }
+      },
+      (error) => {},
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setInputs((prevInputs) => {
+            return { ...prevInputs, [urlType]: downloadURL };
+          });
+        });
+      }
+    );
+  };
+
+  const handleUpload = () => {
+    mutate(inputs)
   };
 
   return reactDOM.createPortal(
@@ -95,11 +155,15 @@ function Upload({ setOpenUpload }) {
         <Close onClick={() => setOpenUpload(false)}>X</Close>
         <Title>Upload New Video</Title>
         <Label>Video:</Label>
-        <Input
-          type="file"
-          accept="video/*"
-          onChange={(e) => setVideo(e.target.files[0])}
-        />
+        {videoPercentage > 0 ? (
+          "Uploading: " + videoPercentage + "%"
+        ) : (
+          <Input
+            type="file"
+            accept="video/*"
+            onChange={(e) => setVideo(e.target.files[0])}
+          />
+        )}
         <Input
           type="text"
           placeholder="Video Title"
@@ -108,7 +172,7 @@ function Upload({ setOpenUpload }) {
         />
         <Description
           placeholder="Description"
-          name="description"
+          name="desc"
           rows={8}
           onChange={handleChange}
         />
@@ -119,12 +183,16 @@ function Upload({ setOpenUpload }) {
           onChange={handleChange}
         />
         <Label>Thumbnail:</Label>
-        <Input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setVideoImage(e.target.files[0])}
-        />
-        <Button>Upload</Button>
+        {videoImagePercentage > 0 ? (
+          "Uploading: " + videoImagePercentage + "%"
+        ) : (
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setVideoImage(e.target.files[0])}
+          />
+        )}
+        <Button onClick={handleUpload}>Upload</Button>
       </Wrapper>
     </Container>,
     document.getElementById("upload-video-portal")

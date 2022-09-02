@@ -7,7 +7,7 @@ import AddTaskOutlinedIcon from '@mui/icons-material/AddTaskOutlined';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Comments from '../components/Comments';
-// import Card from '../components/Card';
+import Recommendations from '../components/Recommendations';
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from 'react-router-dom';
 import { useQuery ,useMutation} from 'react-query';
@@ -24,9 +24,6 @@ gap: 2.4rem;
 `;
 const Content = styled.div`
 flex: 5;
-`;
-const Recommendation = styled.div`
-flex: 2;
 `;
 const VideoWrapper = styled.div`
 
@@ -202,12 +199,11 @@ function Video() {
     subscriptionMutate([{channel:{id: channel?._id}},user?._id,subStatus])
   }
 
-
   return (
     <Container>
       <Content>
         <VideoWrapper>
-         <VideoFrame src={video?.videoURL}/>
+         <VideoFrame src={video?.videoUrl} controls/>
         </VideoWrapper>
         <Title>{video?.title}</Title>
         <Details>
@@ -234,14 +230,7 @@ function Video() {
         <Hr />
         <Comments videoId={video?._id}/>
       </Content>
-      <Recommendation>
-        {/* <Card type='small'/>
-        <Card type='small'/>
-        <Card type='small'/>
-        <Card type='small'/>
-        <Card type='small'/>
-        <Card type='small'/> */}
-      </Recommendation>
+      <Recommendations tags={video?.tags}/>
     </Container>
   )
 }

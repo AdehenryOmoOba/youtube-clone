@@ -37,6 +37,7 @@ const Search = styled.div`
  padding: 0.5rem;
  border: 0.1rem solid #cccccc;
  border-radius: 0.3rem;
+ color: ${({theme}) => theme.text};
 `;
 
 const Input = styled.input`
