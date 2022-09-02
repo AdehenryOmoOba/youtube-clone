@@ -99,7 +99,6 @@ export const subscribedVideosController = async (req, res, next) => {
 
 export const searchByTagsController = async (req, res, next) => {
   try {
-    console.log(req.query.tags.toLowerCase());
     const tagsArray = req.query.tags.toLowerCase().split(",");
     const videos = await VideoModel.find({
       tags: { $in: tagsArray },
