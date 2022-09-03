@@ -7,8 +7,7 @@ import axios from 'axios'
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 1.5rem 1rem;
+  gap: 0.5rem 5rem;
 `;
 const Messages = styled.p`
 color:  ${({ theme }) => theme.text};

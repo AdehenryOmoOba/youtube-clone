@@ -4,17 +4,19 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import VideoCallOutlinedIcon from '@mui/icons-material/VideoCallOutlined';
 import { Button } from './Menu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux'
 import { logout} from '../redux-tool-kit/slices/userSlice';
 import Upload from '../pages/Upload';
-
 
 const Container = styled.div`
   position: sticky;
   top: 0rem;
   height: 5.6rem;
-  background-color: ${({theme}) => theme.bgLighter};
+  background-color: ${({theme}) => theme.bgLight};
+`;
+const SearchBtn = styled.div`
+cursor: pointer;
 `;
 const Wrapper = styled.div`
  display: flex;
@@ -43,6 +45,10 @@ const Search = styled.div`
 const Input = styled.input`
  background-color: transparent;
  border: none;
+ outline: none;
+ width: 90%;
+ height: 100%;
+ color: ${({theme}) => theme.text};
 `;
 
 const User = styled.div`
@@ -61,9 +67,11 @@ background-color: #999999;
 `;
 
 function Navbar({setIsLoggedIn}) {
+  const [searchBox, setSearchBox] = useState('')
   const [openUpload, setOpenUpload] = useState(false)
   const {user} = useSelector((state) => state.userReducer )
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const handleLogout = () => {
     localStorage.removeItem('logged-in-user')
@@ -76,8 +84,10 @@ function Navbar({setIsLoggedIn}) {
   <Container>
     <Wrapper>
       <Search>
-       <Input placeholder='Search'/>
-       <SearchOutlinedIcon />
+       <Input placeholder='Search' value={searchBox} onChange={(e) => setSearchBox(e.target.value)}/>
+       <SearchBtn>
+       <SearchOutlinedIcon onClick={() => navigate(`/search?q=${searchBox}`)} />
+       </SearchBtn>
       </Search>
    {user ? <User>
     <VideoCallOutlinedIcon onClick={() => setOpenUpload(true)}/>

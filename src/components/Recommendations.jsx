@@ -1,7 +1,7 @@
 import React,{useState} from 'react'
 import styled from "styled-components"
 import { useQuery} from 'react-query';
-import Card from '../components/Card';
+import Card from './Card';
 import axios from 'axios';
 
 const Container = styled.div`
@@ -14,7 +14,7 @@ const fetchVideos = async ({queryKey}) => {
   return response.data
 }
 
-function Recommendations({tags}) {
+function Recommendations({tags,channel}) {
     const [videos, setVideos] = useState([])
 
     useQuery(['videos', tags], fetchVideos,{
@@ -29,7 +29,7 @@ function Recommendations({tags}) {
   return (
     <Container>
         {videos?.map((video) => {
-          return  <Card key={video._id} video={video} type='sm'/>
+          return  <Card key={video._id} video={video} channel={channel} type='sm'/>
         })}
     </Container>
   )

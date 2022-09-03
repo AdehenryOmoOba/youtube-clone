@@ -10,6 +10,7 @@ import Video from "./pages/Video";
 import Login from "./pages/Login";
 import { fetchUserSuccess } from "./redux-tool-kit/slices/userSlice";
 import { useDispatch } from "react-redux";
+import Search from "./pages/Search";
 
 const Container = styled.div`
   display: flex;
@@ -43,7 +44,6 @@ function App() {
     localStorage.setItem("themeMode", darkMode);
   }, [darkMode]);
 
-
   return (
     <ThemeProvider theme={darkMode === "dark" ? darkTheme : lightTheme}>
       <Container>
@@ -54,6 +54,7 @@ function App() {
             <Routes path="/">
               <Route index element={<Home type="random" />} />
               <Route path="trend" element={<Home type="trend" />} />
+              <Route path="search" element={<Search />} />
               <Route path="subscribed" element={<Home type="subscribed" />} />
               <Route path="video">
                 <Route path=":id" element={<Video />} />

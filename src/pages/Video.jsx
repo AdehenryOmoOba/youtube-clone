@@ -71,7 +71,6 @@ const Image = styled.img`
 width: 5rem;
 height: 5rem;
 border-radius: 50%;
-border: 1rem solid yellow;
 `;
 const ChannelDetails = styled.div`
 display: flex;
@@ -107,8 +106,6 @@ const VideoFrame = styled.video`
   width: 100%;
   object-fit: cover;
 `
-
-
 const fetchVideo = async ({queryKey}) => {
   const response = await axios.get(`/videos/find/${queryKey[1]}`)
   return response.data
@@ -203,7 +200,7 @@ function Video() {
     <Container>
       <Content>
         <VideoWrapper>
-         <VideoFrame src={video?.videoUrl} controls/>
+         <VideoFrame src={video?.videoUrl} controls poster={video?.imgUrl}/>
         </VideoWrapper>
         <Title>{video?.title}</Title>
         <Details>
@@ -230,7 +227,7 @@ function Video() {
         <Hr />
         <Comments videoId={video?._id}/>
       </Content>
-      <Recommendations tags={video?.tags}/>
+      <Recommendations tags={video?.tags} channel={channel}/>
     </Container>
   )
 }
