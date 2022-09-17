@@ -43,10 +43,10 @@ function Comments({videoId}) {
 
   return (
     <Container>
-        <NewComment>
+       {user && <NewComment>
             <Avatar src={user?.img}/>
             <Input placeholder='Add a comment...'/>
-        </NewComment>
+        </NewComment>}
         {comments.map((comment) =>  <Comment key={comment._id} comment={comment}/>)}
     </Container>
   )
