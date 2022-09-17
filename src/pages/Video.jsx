@@ -225,7 +225,7 @@ function Video() {
           <SubscribeBtn onClick={handleSubscription}>{user?.subscribedUsers?.includes(channel?._id) ? "SUBSCRIBED" : "SUBSCRIBE"}</SubscribeBtn>
         </Channel>
         <Hr />
-        <Comments videoId={video?._id}/>
+        {user && <Comments videoId={video?._id}/>}
       </Content>
       <Recommendations tags={video?.tags} channel={channel}/>
     </Container>
